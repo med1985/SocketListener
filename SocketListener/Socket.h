@@ -1,11 +1,15 @@
+#pragma once
 #include <exception>
 #include <winsock2.h>
+#include <string>
 
-class SocketException : public std::exception
+using namespace std;
+
+class SocketException : public exception
 {
-	std::string exceptionMsg;
+	string exceptionMsg;
 public:
-	SocketException(std::string msg) : exceptionMsg(msg)
+	SocketException(string msg) : exceptionMsg(msg)
 	{ }
 
 	virtual const char* what() const throw()

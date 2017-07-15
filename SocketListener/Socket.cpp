@@ -1,5 +1,6 @@
-#undef UNICODE
+#pragma once
 
+#undef UNICODE
 #define WIN32_LEAN_AND_MEAN
 
 #include <iostream>
@@ -9,6 +10,7 @@
 #include <stdlib.h>
 #include <string>
 #include "Socket.h"
+#include "HeaderParser.h"
 
 // Need to link with Ws2_32.lib
 #pragma comment (lib, "Ws2_32.lib")
@@ -81,23 +83,22 @@ void WindowsSocket::listenOn(const int port)
 
 	// No longer need server socket
 	closesocket(ListenSocket);
-
+	stringstream stream;
 	// Receive until the peer shuts down the connection
 	do {
 
 		iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
 		if (iResult > 0) {
-			cout << "Bytes received: " << iResult << endl;
-			cout << recvbuf << endl;
+			stream.write(recvbuf, recvbuflen);
 
-			// Echo the buffer back to the sender
-			iSendResult = send(ClientSocket, recvbuf, iResult, 0);
-			if (iSendResult == SOCKET_ERROR) {
-				closesocket(ClientSocket);
-				WSACleanup();
-				throw SocketException("send failed with error: " + WSAGetLastError());
-			}
-			cout << "Bytes sent: " << iSendResult << endl;
+//			// Echo the buffer back to the sender
+//			iSendResult = send(ClientSocket, recvbuf, iResult, 0);
+//			if (iSendResult == SOCKET_ERROR) {
+//				closesocket(ClientSocket);
+//				WSACleanup();
+//				throw SocketException("send failed with error: " + WSAGetLastError());
+//			}
+//			cout << "Bytes sent: " << iSendResult << endl;
 		}
 		else if (iResult == 0)
 			cout << "Connection closing..." << endl;
@@ -109,6 +110,9 @@ void WindowsSocket::listenOn(const int port)
 		}
 
 	} while (iResult == DEFAULT_BUFLEN);
+
+	HeaderParser hp;
+	auto request_headers = hp.parse(stream.str());
 
 	// shutdown the connection since we're done
 	iResult = shutdown(ClientSocket, SD_SEND);

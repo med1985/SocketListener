@@ -1,4 +1,5 @@
-#include "Socket.h"
+#pragma once
+#include "Socket.cpp"
 
 int main()
 {
