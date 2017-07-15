@@ -88,6 +88,7 @@ void WindowsSocket::listenOn(const int port)
 		iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
 		if (iResult > 0) {
 			cout << "Bytes received: " << iResult << endl;
+			cout << recvbuf << endl;
 
 			// Echo the buffer back to the sender
 			iSendResult = send(ClientSocket, recvbuf, iResult, 0);
@@ -107,7 +108,7 @@ void WindowsSocket::listenOn(const int port)
 			throw SocketException("recv failed with error: " + WSAGetLastError());
 		}
 
-	} while (iResult > 0);
+	} while (iResult == DEFAULT_BUFLEN);
 
 	// shutdown the connection since we're done
 	iResult = shutdown(ClientSocket, SD_SEND);

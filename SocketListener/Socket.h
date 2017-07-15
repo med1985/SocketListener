@@ -1,5 +1,4 @@
 #include <exception>
-#include <string>
 #include <winsock2.h>
 
 class SocketException : public std::exception
